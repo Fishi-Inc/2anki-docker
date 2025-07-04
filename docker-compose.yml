@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  create_deck:
+    build:
+      context: .
+      dockerfile: Dockerfile.create_deck
+    container_name: 2anki-create-deck
+    volumes:
+      - genanki-workspace:/tmp/genanki
+    networks:
+      - anki-network
+    restart: unless-stopped
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: 2anki-server
+    ports:
+      - "2020:2020"
+    volumes:
+      - genanki-workspace:/tmp/genanki
+    networks:
+      - anki-network
+    depends_on:
+      - create_deck
+    environment:
+      - WORKSPACE_BASE=/tmp/genanki
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: 2anki-web
+    volumes:
+      - web-build:/app/web/dist
+    networks:
+      - anki-network
+
+volumes:
+  genanki-workspace:
+    driver: local
+  web-build:
+    driver: local
+
+networks:
+  anki-network:
+    driver: bridge
