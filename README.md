@@ -1,0 +1,222 @@
+# 2anki Docker Setup
+
+> **Note:** This is a dockerized version of the original 2anki application. The original work is by [2anki](https://github.com/2anki) and is licensed under the MIT License.
+
+## About 2anki
+
+2anki is a tool for converting various sources (like Notion, PDFs, etc.) into Anki flashcards. This Docker setup variant greatly simplifies installation and operation.
+
+## Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Git (for cloning repositories)
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/fishi-inc/2anki-docker.git
+cd 2anki-docker
+```
+
+### 2. Run Setup
+
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+### 3. Start Containers
+
+```bash
+docker-compose up -d
+```
+
+## Usage
+
+After startup, 2anki is available at: `http://localhost:2020`
+
+---
+
+### With Portainer / docker-compose
+
+```yaml
+version: '3.8'
+
+services:
+  web:
+    image: fishiinc/2anki-web:latest
+    volumes:
+      - web_dist:/app/web/dist
+    
+  create_deck:
+    image: fishiinc/2anki-create-deck:latest
+    volumes:
+      - genanki_workspace:/tmp/genanki
+    environment:
+      - PYTHONPATH=/app/create_deck
+    
+  server:
+    image: fishiinc/2anki-server:latest
+    ports:
+      - "2020:2020"
+    volumes:
+      - web_dist:/app/server/web/dist
+      - genanki_workspace:/tmp/genanki
+    environment:
+      - WORKSPACE_BASE=/tmp/genanki
+      - NODE_ENV=production
+    depends_on:
+      - web
+      - create_deck
+
+volumes:
+  web_dist:
+  genanki_workspace:
+```
+
+## Services
+
+### 🏗️ Create Deck Service
+- **Container**: `2anki-create-deck`
+- **Base**: Python 3.11
+- **Purpose**: Processing and creation of Anki decks
+
+### 🖥️ Server Service
+- **Container**: `2anki-server`
+- **Port**: `2020`
+- **Base**: Node.js 20
+- **Purpose**: Backend API for the application
+
+### 🌐 Web Service
+- **Container**: `2anki-web`
+- **Base**: Node.js 20
+- **Purpose**: Frontend build service
+
+## Configuration
+
+### Environment Variables
+
+The server service uses the following environment variables:
+- `WORKSPACE_BASE`: `/tmp/genanki` (default)
+- `NODE_ENV`: `production`
+
+### Volumes
+
+- `genanki-workspace`: Shared workspace for all services
+- `web-build`: Build artifacts of the web service
+
+### Network
+
+All services use the `default` for internal communication.
+If your need to add a network, add a `public` network to **server** and **web**.
+
+## Custom Configurations
+
+<details>
+<summary>Click to see how it should look in the yaml</summary>
+
+```yaml
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true  # Kein Internet-Zugang
+
+services:
+  web:
+    networks:
+      - frontend
+      
+  server:
+    networks:
+      - frontend
+      - backend
+      
+  create_deck:
+    networks:
+      - backend
+```
+
+</details>
+
+## Maintenance
+
+### Restart Containers
+```bash
+docker-compose restart
+```
+
+### View Logs
+```bash
+docker-compose logs -f
+```
+
+### Manage Individual Services
+```bash
+# Restart only server
+docker-compose restart server
+
+# Restart only create-deck service
+docker-compose restart create_deck
+```
+
+### Updates
+
+To update the services:
+
+1. Stop containers:
+   ```bash
+   docker-compose down
+   ```
+
+2. Rebuild images:
+   ```bash
+   docker-compose build --no-cache
+   ```
+
+3. Restart containers:
+   ```bash
+   docker-compose up -d
+   ```
+
+## Troubleshooting
+
+### Common Issues
+
+**Port 2020 already in use:**
+```bash
+# Change port mapping in docker-compose.yml
+ports:
+  - "3000:2020"  # Use port 3000 instead of 2020
+```
+
+### Check Logs
+
+```bash
+# All services
+docker-compose logs
+
+# Specific service
+docker-compose logs server
+docker-compose logs create_deck
+docker-compose logs web
+```
+
+## License
+
+This dockerization is licensed under the MIT License. The original 2anki components are also available under the MIT License:
+
+- [2anki/server](https://github.com/2anki/server)
+- [2anki/web](https://github.com/2anki/web)  
+- [2anki/create_deck](https://github.com/2anki/create_deck)
+
+## Contributing
+
+Improvements and bug fixes are welcome! Please create a pull request or open an issue.
+
+## Credits
+
+- Original 2anki application: [2anki.net](https://github.com/2anki)
