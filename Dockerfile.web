@@ -1,0 +1,23 @@
+FROM node:18-bookworm-slim
+
+# Install git and basic tools
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Clone repositories if they don't exist
+RUN if [ ! -d "web" ]; then \
+        git clone https://github.com/2anki/web.git web; \
+    fi
+
+WORKDIR /app/web
+
+# Install dependencies
+RUN npm install
+
+# Build the application
+RUN npm run build
+
+CMD ["npm", "run", "build"]

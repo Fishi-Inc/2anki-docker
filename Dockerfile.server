@@ -1,0 +1,29 @@
+FROM node:18-bookworm-slim
+
+# Install git and basic tools
+RUN apt-get update && apt-get install -y \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Clone repositories if they don't exist
+RUN if [ ! -d "server" ]; then \
+        git clone https://github.com/2anki/server.git server; \
+    fi
+
+WORKDIR /app/server
+
+# Install dependencies
+RUN npm install
+
+# Build the application
+RUN npm run build
+
+# Create workspace directory
+RUN mkdir -p /tmp/genanki
+
+# Expose port
+EXPOSE 2020
+
+CMD ["node", "src/server.js"]
