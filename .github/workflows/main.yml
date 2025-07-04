@@ -2,7 +2,9 @@ name: Build and Push Docker Images
 
 on:
   push:
-    branches: [ main ]
+    paths:
+      - '**/Dockerfile'
+      - '**/Dockerfile.*'
 
 jobs:
   build:
