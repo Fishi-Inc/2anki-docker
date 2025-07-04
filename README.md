@@ -112,8 +112,6 @@ The server service uses the following environment variables:
 All services use the `default` for internal communication.
 If your need to add a network, add a `public` network to **server** and **web**.
 
-## Custom Configurations
-
 <details>
 <summary>Click to see how it should look in the yaml</summary>
 
