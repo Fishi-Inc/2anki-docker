@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Clone repository if it doesn't exist
+# Clone create_deck repository
 RUN if [ ! -d "create_deck" ]; then \
         git clone https://github.com/2anki/create_deck.git create_deck; \
     fi
@@ -20,4 +20,11 @@ RUN pip install --break-system-packages -r requirements.txt
 # Create workspace directory
 RUN mkdir -p /tmp/genanki
 
-CMD ["python", "-c", "import time; time.sleep(3600)"]
+# Set Python path and temp directory environment variables
+ENV PYTHONPATH=/app/create_deck
+ENV TMPDIR=/tmp/genanki
+ENV TMP=/tmp/genanki
+ENV TEMP=/tmp/genanki
+
+# Keep container running (service mode)
+CMD ["tail", "-f", "/dev/null"]

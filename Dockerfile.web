@@ -7,17 +7,19 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Clone repositories if they don't exist
-RUN if [ ! -d "web" ]; then \
-        git clone https://github.com/2anki/web.git web; \
+
+# Clone web repository into server/web (as per instructions)
+RUN if [ ! -d "server/web" ]; then \
+        git clone https://github.com/2anki/web.git server/web; \
     fi
 
-WORKDIR /app/web
+WORKDIR /app/server/web
 
-# Install dependencies
+# Install Node.js dependencies using nvm equivalent
 RUN npm install
 
 # Build the application
 RUN npm run build
 
-CMD ["npm", "run", "build"]
+# Keep the container running so volumes stay mounted
+CMD ["tail", "-f", "/dev/null"]

@@ -8,8 +8,14 @@ services:
     container_name: 2anki-create-deck
     volumes:
       - genanki-workspace:/tmp/genanki
+      - server-templates:/app/server/src
+      - create-deck-scripts:/app/create_deck
     networks:
       - anki-network
+    depends_on:
+      - server
+    environment:
+      - TMPDIR=/tmp/genanki
     restart: unless-stopped
 
   server:
@@ -21,13 +27,17 @@ services:
       - "2020:2020"
     volumes:
       - genanki-workspace:/tmp/genanki
+      - web-build:/app/server/web/build
+      - server-templates:/app/server/src
+      - create-deck-scripts:/app/create_deck
     networks:
       - anki-network
     depends_on:
-      - create_deck
+      - web
     environment:
       - WORKSPACE_BASE=/tmp/genanki
-      - NODE_ENV=production
+      - TMPDIR=/tmp/genanki
+      - PORT=2020
     restart: unless-stopped
 
   web:
@@ -36,7 +46,7 @@ services:
       dockerfile: Dockerfile.web
     container_name: 2anki-web
     volumes:
-      - web-build:/app/web/dist
+      - web-build:/app/server/web/build
     networks:
       - anki-network
 
@@ -44,6 +54,10 @@ volumes:
   genanki-workspace:
     driver: local
   web-build:
+    driver: local
+  server-templates:
+    driver: local
+  create-deck-scripts:
     driver: local
 
 networks:

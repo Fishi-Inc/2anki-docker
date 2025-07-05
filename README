@@ -205,6 +205,10 @@ docker-compose logs create_deck
 docker-compose logs web
 ```
 
+### Card Settings
+
+Navigate to `localhost:2020/upload`
+
 ## License
 
 This dockerization is licensed under the MIT License. The original 2anki components are also available under the MIT License:

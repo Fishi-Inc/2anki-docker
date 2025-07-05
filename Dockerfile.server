@@ -1,8 +1,10 @@
 FROM node:20-bookworm-slim
 
-# Install git and basic tools
+# Install git, Python and basic tools
 RUN apt-get update && apt-get install -y \
     git \
+    python3 \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -12,7 +14,19 @@ RUN if [ ! -d "server" ]; then \
         git clone https://github.com/2anki/server.git server; \
     fi
 
+# Clone create_deck for Python dependencies
+RUN if [ ! -d "create_deck" ]; then \
+        git clone https://github.com/2anki/create_deck.git create_deck; \
+    fi
+
 WORKDIR /app/server
+
+# Create environment file as per instructions
+RUN echo "WORKSPACE_BASE=/tmp/genanki" > .env && \
+    echo "PORT=2020" >> .env
+
+# Install Python dependencies for create_deck
+RUN pip install --break-system-packages -r ../create_deck/requirements.txt
 
 # Install dependencies
 RUN npm install
@@ -22,6 +36,11 @@ RUN npm run build
 
 # Create workspace directory
 RUN mkdir -p /tmp/genanki
+
+# Set environment variables
+ENV TMPDIR=/tmp/genanki
+ENV TMP=/tmp/genanki
+ENV TEMP=/tmp/genanki
 
 # Expose port
 EXPOSE 2020
