@@ -20,17 +20,51 @@ git clone https://github.com/fishi-inc/2anki-docker.git
 cd 2anki-docker
 ```
 
-### 2. Run Setup
+### 2. Configure Environment (Optional)
+
+Copy the example environment file and modify as needed:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` to add custom allowed origins or IP addresses:
+
+```bash
+# Additional allowed origins (comma-separated)
+ADDITIONAL_ALLOWED_ORIGINS=https://myapp.example.com,https://another-domain.com
+
+# IP addresses to allow (comma-separated)
+# These will automatically generate http/https origins on ports 8080 and 2020
+ALLOWED_IP_ADDRESSES=192.168.1.100,10.0.0.50,172.16.0.10
+```
+
+### 3. Run Setup
 
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
-### 3. Start Containers
+### 4. Start Containers
 
 ```bash
 docker-compose up -d
+```
+
+## Configuration
+
+### Environment Variables
+
+The following environment variables can be set in a `.env` file or passed directly to Docker Compose:
+
+- `ADDITIONAL_ALLOWED_ORIGINS`: Comma-separated list of additional allowed origins for CORS
+- `ALLOWED_IP_ADDRESSES`: Comma-separated list of IP addresses that will be automatically added as allowed origins on ports 8080 and 2020
+
+Example `.env` file:
+```bash
+ADDITIONAL_ALLOWED_ORIGINS=https://myapp.example.com,https://another-domain.com
+ALLOWED_IP_ADDRESSES=192.168.1.100,10.0.0.50
 ```
 
 ## Usage

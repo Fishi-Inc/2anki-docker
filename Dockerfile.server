@@ -9,6 +9,13 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Copy runtime update scripts
+COPY update-constants-runtime.sh /app/update-constants-runtime.sh
+COPY start-server.sh /app/start-server.sh
+
+# Make scripts executable
+RUN chmod +x /app/update-constants-runtime.sh /app/start-server.sh
+
 # Clone repositories if they don't exist
 RUN if [ ! -d "server" ]; then \
         git clone https://github.com/2anki/server.git server; \
@@ -45,4 +52,4 @@ ENV TEMP=/tmp/genanki
 # Expose port
 EXPOSE 2020
 
-CMD ["node", "src/server.js"]
+CMD ["/app/start-server.sh"]

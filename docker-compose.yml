@@ -37,7 +37,8 @@ services:
     environment:
       - WORKSPACE_BASE=/tmp/genanki
       - TMPDIR=/tmp/genanki
-      - PORT=2020
+      - ADDITIONAL_ALLOWED_ORIGINS=${ADDITIONAL_ALLOWED_ORIGINS:-}
+      - ALLOWED_IP_ADDRESSES=${ALLOWED_IP_ADDRESSES:-}
     restart: unless-stopped
 
   web:
