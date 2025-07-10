@@ -40,10 +40,8 @@ if [ ! -z "$ALLOWED_IP_ADDRESSES" ]; then
         # Trim whitespace
         ip=$(echo "$ip" | xargs)
         if [ ! -z "$ip" ]; then
-            ADDITIONAL_ORIGINS="$ADDITIONAL_ORIGINS  'http://$ip:8080',\n"
-            ADDITIONAL_ORIGINS="$ADDITIONAL_ORIGINS  'http://$ip:2020',\n"
-            ADDITIONAL_ORIGINS="$ADDITIONAL_ORIGINS  'https://$ip:8080',\n"
-            ADDITIONAL_ORIGINS="$ADDITIONAL_ORIGINS  'https://$ip:2020',\n"
+            ADDITIONAL_ORIGINS="$ADDITIONAL_ORIGINS  'http://$ip:$EXTERNAL_PORT',\n"
+            ADDITIONAL_ORIGINS="$ADDITIONAL_ORIGINS  'https://$ip:$EXTERNAL_PORT',\n"
         fi
     done
 fi

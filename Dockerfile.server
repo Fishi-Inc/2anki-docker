@@ -30,7 +30,7 @@ WORKDIR /app/server
 
 # Create environment file as per instructions
 RUN echo "WORKSPACE_BASE=/tmp/genanki" > .env && \
-    echo "PORT=2020" >> .env
+    echo "PORT=${PORT:-2020}" >> .env
 
 # Install Python dependencies for create_deck
 RUN pip install --break-system-packages -r ../create_deck/requirements.txt
@@ -50,6 +50,7 @@ ENV TMP=/tmp/genanki
 ENV TEMP=/tmp/genanki
 
 # Expose port
-EXPOSE 2020
+# Expose the port from environment variable with default fallback
+EXPOSE ${PORT:-2020}
 
 CMD ["/app/start-server.sh"]

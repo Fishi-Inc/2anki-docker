@@ -10,8 +10,6 @@ services:
       - genanki-workspace:/tmp/genanki
       - server-templates:/app/server/src
       - create-deck-scripts:/app/create_deck
-    networks:
-      - anki-network
     depends_on:
       - server
     environment:
@@ -24,14 +22,14 @@ services:
       dockerfile: Dockerfile.server
     container_name: 2anki-server
     ports:
-      - "2020:2020"
+      - "${PORT:-2020}:${PORT:-2020}"
     volumes:
       - genanki-workspace:/tmp/genanki
       - web-build:/app/server/web/build
       - server-templates:/app/server/src
       - create-deck-scripts:/app/create_deck
     networks:
-      - anki-network
+      - web
     depends_on:
       - web
     environment:
@@ -39,6 +37,8 @@ services:
       - TMPDIR=/tmp/genanki
       - ADDITIONAL_ALLOWED_ORIGINS=${ADDITIONAL_ALLOWED_ORIGINS:-}
       - ALLOWED_IP_ADDRESSES=${ALLOWED_IP_ADDRESSES:-}
+      - PORT=${PORT:-2020}
+      - EXTERNAL_PORT=${PORT:-2020}
     restart: unless-stopped
 
   web:
@@ -48,8 +48,6 @@ services:
     container_name: 2anki-web
     volumes:
       - web-build:/app/server/web/build
-    networks:
-      - anki-network
 
 volumes:
   genanki-workspace:
@@ -62,5 +60,6 @@ volumes:
     driver: local
 
 networks:
-  anki-network:
+  web:
     driver: bridge
+
